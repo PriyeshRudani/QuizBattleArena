@@ -27,7 +27,7 @@ function Dashboard({ user }) {
   const fetchCategories = async () => {
     try {
       const data = await categoryAPI.getAll();
-      setCategories(data);
+      setCategories(data.results || data);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
     } finally {

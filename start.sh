@@ -10,7 +10,8 @@ cd backend
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Run migrations
+# Create and run migrations
+python manage.py makemigrations
 python manage.py migrate
 
 # Create superuser if it doesn't exist
