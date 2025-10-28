@@ -28,7 +28,7 @@ class Category(models.Model):
 class Question(models.Model):
     QUESTION_TYPES = [
         ('MCQ', 'Multiple Choice'),
-        ('CODING', 'Coding Challenge'),
+        ('CODE', 'Coding Challenge'),
         ('QUICK', 'Quick Fire'),
     ]
     
@@ -70,7 +70,13 @@ class Question(models.Model):
 
 
 class UserProfile(models.Model):
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('user', 'User'),
+    ]
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
     total_points = models.IntegerField(default=0)
     badges = models.JSONField(default=list, blank=True)
     avatar_url = models.URLField(blank=True, null=True)
@@ -79,7 +85,10 @@ class UserProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.user.username}'s Profile"
+        return f"{self.user.username}'s Profile ({self.role})"
+    
+    def is_admin(self):
+        return self.role == 'admin' or self.user.is_staff or self.user.is_superuser
 
 
 class Score(models.Model):
@@ -127,4 +136,13 @@ class Challenge(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        # Assign admin role to staff/superuser, otherwise user role
+        role = 'admin' if (instance.is_staff or instance.is_superuser) else 'user'
+        UserProfile.objects.create(user=instance, role=role)
+    else:
+        # Update role if user's staff status changes
+        if hasattr(instance, 'profile'):
+            if instance.is_staff or instance.is_superuser:
+                if instance.profile.role != 'admin':
+                    instance.profile.role = 'admin'
+                    instance.profile.save()

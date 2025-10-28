@@ -62,11 +62,16 @@ class UserSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
+    role = serializers.CharField(read_only=True)
+    is_admin = serializers.SerializerMethodField()
     
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'total_points', 'badges', 'avatar_url', 'bio', 'created_at']
-        read_only_fields = ['total_points', 'created_at']
+        fields = ['id', 'username', 'email', 'role', 'is_admin', 'total_points', 'badges', 'avatar_url', 'bio', 'created_at']
+        read_only_fields = ['role', 'total_points', 'created_at']
+    
+    def get_is_admin(self, obj):
+        return obj.is_admin()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -124,3 +129,49 @@ class AnswerSubmissionSerializer(serializers.Serializer):
     code = serializers.CharField(required=False, allow_blank=True)
     language = serializers.CharField(required=False, allow_blank=True)
     time_taken = serializers.IntegerField(required=False, default=0)
+
+
+# Admin Serializers with full field access
+class AdminQuestionSerializer(serializers.ModelSerializer):
+    """Full question serializer for admin with correct answers"""
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    
+    class Meta:
+        model = Question
+        fields = [
+            'id', 'title', 'category', 'category_name', 'question_type',
+            'difficulty', 'language', 'question_text', 'options',
+            'correct_option', 'correct_answer', 'solution_code',
+            'explanation', 'points', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    """Full user serializer for admin with role and profile info"""
+    role = serializers.CharField(source='profile.role', read_only=True)
+    total_points = serializers.IntegerField(source='profile.total_points', read_only=True)
+    is_staff = serializers.BooleanField(read_only=True)
+    is_active = serializers.BooleanField()
+    
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'is_active', 'is_staff', 'role', 'total_points', 'date_joined', 'last_login'
+        ]
+        read_only_fields = ['date_joined', 'last_login']
+
+
+class AdminCategorySerializer(serializers.ModelSerializer):
+    """Full category serializer for admin with question count"""
+    question_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug', 'description', 'question_count', 'created_at']
+        read_only_fields = ['slug', 'created_at']
+    
+    def get_question_count(self, obj):
+        return obj.questions.count()
+

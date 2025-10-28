@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { categoryAPI, questionAPI } from '../api';
 import confetti from 'canvas-confetti';
 
-function QuizPlayer({ user, onUpdateUser }) {
+function QuizPlayer() {
   const { slug } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -106,7 +108,7 @@ function QuizPlayer({ user, onUpdateUser }) {
 
       if (question.question_type === 'MCQ') {
         payload.answer = selectedAnswer;
-      } else if (question.question_type === 'CODING') {
+      } else if (question.question_type === 'CODE') {
         payload.code = codeAnswer;
         payload.language = question.language;
       } else if (question.question_type === 'QUICK') {
@@ -120,8 +122,9 @@ function QuizPlayer({ user, onUpdateUser }) {
         triggerConfetti();
       }
 
-      if (onUpdateUser) {
-        onUpdateUser({ ...user, total_points: response.total_points });
+      // Update user points in context
+      if (updateUser && user) {
+        updateUser({ ...user, total_points: response.total_points });
       }
     } catch (error) {
       console.error('Failed to submit answer:', error);
@@ -234,7 +237,7 @@ function QuizPlayer({ user, onUpdateUser }) {
             </div>
           )}
 
-          {question.question_type === 'CODING' && (
+          {question.question_type === 'CODE' && (
             <div>
               <label className="block text-sm font-medium mb-2">
                 Your Solution ({question.language}):
@@ -315,7 +318,7 @@ function QuizPlayer({ user, onUpdateUser }) {
                 disabled={
                   submitting ||
                   (question.question_type === 'MCQ' && selectedAnswer === null) ||
-                  (question.question_type === 'CODING' && !codeAnswer.trim()) ||
+                  (question.question_type === 'CODE' && !codeAnswer.trim()) ||
                   (question.question_type === 'QUICK' && !textAnswer)
                 }
                 className="btn-primary"

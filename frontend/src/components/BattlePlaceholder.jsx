@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
-function BattlePlaceholder({ user }) {
+function BattlePlaceholder() {
+  const { user } = useAuth();
   const [searching, setSearching] = useState(false);
 
   const handleStartBattle = () => {

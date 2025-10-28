@@ -630,22 +630,53 @@ class Command(BaseCommand):
             },
         ]
         
-        # Add more coding questions
-        for i in range(27):
-            cat_name = random.choice(list(categories.keys()))
+        # Add more coding questions with meaningful problems
+        additional_coding_problems = [
+            ('Sum of Array Elements', 'Write a function that takes an array of numbers and returns their sum.', 'EASY', 20),
+            ('Check Prime Number', 'Write a function that checks if a given number is prime. Return True if prime, False otherwise.', 'MEDIUM', 25),
+            ('Palindrome Checker', 'Write a function that checks if a given string is a palindrome (reads the same forwards and backwards).', 'EASY', 20),
+            ('Count Vowels', 'Write a function that counts the number of vowels (a, e, i, o, u) in a given string.', 'EASY', 20),
+            ('Factorial Calculator', 'Write a recursive function to calculate the factorial of a number n (n!).', 'MEDIUM', 25),
+            ('Fibonacci Sequence', 'Write a function that returns the nth number in the Fibonacci sequence (0, 1, 1, 2, 3, 5, 8...).', 'MEDIUM', 25),
+            ('Remove Duplicates', 'Write a function that removes duplicate values from an array while maintaining order.', 'MEDIUM', 25),
+            ('Binary Search', 'Implement binary search to find the index of a target value in a sorted array.', 'HARD', 30),
+            ('Merge Two Sorted Arrays', 'Write a function that merges two sorted arrays into one sorted array.', 'MEDIUM', 25),
+            ('Anagram Checker', 'Write a function that checks if two strings are anagrams of each other.', 'MEDIUM', 25),
+            ('First Non-Repeating Character', 'Find the first non-repeating character in a string. Return the character or null if none exists.', 'MEDIUM', 25),
+            ('Valid Parentheses', 'Check if a string containing only parentheses (), {}, [] is valid (properly opened and closed).', 'HARD', 30),
+            ('Two Sum Problem', 'Find two numbers in an array that add up to a specific target. Return their indices.', 'MEDIUM', 25),
+            ('Longest Common Prefix', 'Find the longest common prefix string amongst an array of strings.', 'MEDIUM', 25),
+            ('Count Words in String', 'Write a function that counts the number of words in a given string.', 'EASY', 20),
+            ('Reverse Words in String', 'Reverse the order of words in a sentence while keeping word spelling intact.', 'MEDIUM', 25),
+            ('Find Missing Number', 'Given an array containing n distinct numbers from 0 to n, find the missing number.', 'MEDIUM', 25),
+            ('Bubble Sort', 'Implement the bubble sort algorithm to sort an array in ascending order.', 'MEDIUM', 25),
+            ('Linear Search', 'Implement linear search to find the index of a value in an array. Return -1 if not found.', 'EASY', 20),
+            ('Calculate Average', 'Write a function that calculates the average of numbers in an array.', 'EASY', 20),
+            ('String to Integer', 'Convert a string to an integer, handling edge cases like leading/trailing spaces and signs.', 'MEDIUM', 25),
+            ('Remove Element', 'Remove all instances of a specific value from an array in-place and return the new length.', 'EASY', 20),
+            ('Plus One', 'Given an array representing a non-negative integer, add one to it and return the resulting array.', 'MEDIUM', 25),
+            ('Valid Palindrome', 'Check if a string is a palindrome, considering only alphanumeric characters and ignoring cases.', 'MEDIUM', 25),
+            ('Implement Stack', 'Implement a basic stack data structure with push, pop, peek, and isEmpty methods.', 'HARD', 30),
+            ('Implement Queue', 'Implement a basic queue data structure with enqueue, dequeue, front, and isEmpty methods.', 'HARD', 30),
+            ('Rotate Array', 'Rotate an array to the right by k steps, where k is non-negative.', 'MEDIUM', 25),
+        ]
+        
+        for i, (title, problem, difficulty, points) in enumerate(additional_coding_problems):
+            cat_name = random.choice(['Programming Fundamentals', 'Data Structures & Algorithms', 'Web Development'])
+            languages = ['PYTHON', 'JAVASCRIPT', 'JAVA']
             coding_questions.append({
                 'category': categories[cat_name],
-                'title': f'Coding Challenge {i+4}',
-                'question_text': f'Implement a function that solves problem {i+4}.',
-                'solution_code': f'def solution():\n    # Implementation here\n    pass',
-                'difficulty': random.choice(['EASY', 'MEDIUM', 'HARD']),
-                'points': random.choice([20, 25, 30]),
-                'language': random.choice(['PYTHON', 'JAVASCRIPT', 'JAVA'])
+                'title': title,
+                'question_text': problem,
+                'solution_code': f'# Solution for {title}\ndef solution():\n    # Implement your solution here\n    pass',
+                'difficulty': difficulty,
+                'points': points,
+                'language': random.choice(languages)
             })
         
         for q in coding_questions:
             Question.objects.create(
-                question_type='CODING',
+                question_type='CODE',
                 explanation='Check if your solution handles all edge cases.',
                 **q
             )
@@ -680,16 +711,65 @@ class Command(BaseCommand):
             },
         ]
         
-        # Add more quick-fire questions
-        for i in range(47):
-            cat_name = random.choice(list(categories.keys()))
+        # Add more meaningful quick-fire questions
+        additional_quick_questions = [
+            ('JavaScript is compiled', 'True or False: JavaScript is a compiled language.', 'false', 'EASY', 5, 'Programming Fundamentals'),
+            ('CSS stands for', 'True or False: CSS stands for Computer Style Sheets.', 'false', 'EASY', 5, 'Web Development'),
+            ('REST uses HTTP', 'True or False: REST APIs typically use HTTP methods.', 'true', 'MEDIUM', 8, 'Web Development'),
+            ('Binary has two digits', 'True or False: Binary number system uses only 0 and 1.', 'true', 'EASY', 5, 'Programming Fundamentals'),
+            ('Arrays are mutable in JS', 'True or False: Arrays in JavaScript are mutable.', 'true', 'EASY', 5, 'Web Development'),
+            ('TCP is connectionless', 'True or False: TCP is a connectionless protocol.', 'false', 'MEDIUM', 8, 'Computer Networks'),
+            ('NoSQL uses SQL', 'True or False: NoSQL databases use SQL for queries.', 'false', 'MEDIUM', 8, 'Database & SQL'),
+            ('HTTPS is secure', 'True or False: HTTPS provides encrypted communication.', 'true', 'EASY', 5, 'Cybersecurity'),
+            ('Git is centralized', 'True or False: Git is a centralized version control system.', 'false', 'MEDIUM', 8, 'DevOps & Cloud'),
+            ('RAM is volatile', 'True or False: RAM (Random Access Memory) is volatile memory.', 'true', 'EASY', 5, 'Operating Systems'),
+            ('Stack is LIFO', 'True or False: Stack follows Last In First Out (LIFO) principle.', 'true', 'EASY', 5, 'Data Structures & Algorithms'),
+            ('Linux is open source', 'True or False: Linux is an open-source operating system.', 'true', 'EASY', 5, 'Operating Systems'),
+            ('VPN encrypts data', 'True or False: VPN (Virtual Private Network) encrypts your internet traffic.', 'true', 'EASY', 5, 'Cybersecurity'),
+            ('Docker uses VMs', 'True or False: Docker containers are the same as virtual machines.', 'false', 'MEDIUM', 8, 'DevOps & Cloud'),
+            ('JSON is XML', 'True or False: JSON and XML are the same data format.', 'false', 'EASY', 5, 'Web Development'),
+            ('Big O measures time', 'True or False: Big O notation only measures time complexity.', 'false', 'MEDIUM', 8, 'Data Structures & Algorithms'),
+            ('Firewall blocks attacks', 'True or False: A firewall can block all cyber attacks.', 'false', 'MEDIUM', 8, 'Cybersecurity'),
+            ('Agile is iterative', 'True or False: Agile is an iterative development methodology.', 'true', 'EASY', 5, 'Software Engineering'),
+            ('DNS resolves domains', 'True or False: DNS converts domain names to IP addresses.', 'true', 'EASY', 5, 'Computer Networks'),
+            ('MongoDB is relational', 'True or False: MongoDB is a relational database.', 'false', 'EASY', 5, 'Database & SQL'),
+            ('API is interface', 'True or False: API stands for Application Programming Interface.', 'true', 'EASY', 5, 'Software Engineering'),
+            ('Python uses GIL', 'True or False: Python has a Global Interpreter Lock (GIL).', 'true', 'MEDIUM', 8, 'Programming Fundamentals'),
+            ('IPv6 replaces IPv4', 'True or False: IPv6 was created to replace IPv4.', 'true', 'EASY', 5, 'Computer Networks'),
+            ('Encryption is hashing', 'True or False: Encryption and hashing are the same thing.', 'false', 'MEDIUM', 8, 'Cybersecurity'),
+            ('CI/CD automates', 'True or False: CI/CD automates software deployment.', 'true', 'EASY', 5, 'DevOps & Cloud'),
+            ('Queue is FIFO', 'True or False: Queue follows First In First Out (FIFO) principle.', 'true', 'EASY', 5, 'Data Structures & Algorithms'),
+            ('SQL is declarative', 'True or False: SQL is a declarative programming language.', 'true', 'MEDIUM', 8, 'Database & SQL'),
+            ('Localhost is 127', 'True or False: localhost refers to IP address 127.0.0.1.', 'true', 'EASY', 5, 'Computer Networks'),
+            ('Bitcoin uses blockchain', 'True or False: Bitcoin technology uses blockchain.', 'true', 'EASY', 5, 'Tech Trivia & Innovations'),
+            ('AI needs big data', 'True or False: All AI systems require massive amounts of data.', 'false', 'MEDIUM', 8, 'Tech Trivia & Innovations'),
+            ('OAuth for auth', 'True or False: OAuth is an authorization protocol, not authentication.', 'true', 'MEDIUM', 8, 'Cybersecurity'),
+            ('Kubernetes orchestrates', 'True or False: Kubernetes is a container orchestration platform.', 'true', 'EASY', 5, 'DevOps & Cloud'),
+            ('Scrum has sprints', 'True or False: Scrum methodology uses time-boxed sprints.', 'true', 'EASY', 5, 'Software Engineering'),
+            ('Cache improves speed', 'True or False: Caching can improve application performance.', 'true', 'EASY', 5, 'Software Engineering'),
+            ('DDoS is attack', 'True or False: DDoS stands for Distributed Denial of Service attack.', 'true', 'EASY', 5, 'Cybersecurity'),
+            ('AWS is IaaS', 'True or False: AWS provides Infrastructure as a Service (IaaS).', 'true', 'EASY', 5, 'DevOps & Cloud'),
+            ('Binary tree two children', 'True or False: Every node in a binary tree must have exactly two children.', 'false', 'MEDIUM', 8, 'Data Structures & Algorithms'),
+            ('HTTP is stateless', 'True or False: HTTP is a stateless protocol.', 'true', 'EASY', 5, 'Web Development'),
+            ('OOP has inheritance', 'True or False: Inheritance is a core principle of Object-Oriented Programming.', 'true', 'EASY', 5, 'Programming Fundamentals'),
+            ('Unit tests test units', 'True or False: Unit tests should test individual components in isolation.', 'true', 'EASY', 5, 'Software Engineering'),
+            ('Deadlock requires four', 'True or False: Deadlock requires four necessary conditions to occur.', 'true', 'MEDIUM', 8, 'Operating Systems'),
+            ('API REST POST create', 'True or False: In REST APIs, POST method is typically used to create resources.', 'true', 'EASY', 5, 'Web Development'),
+            ('Hash table O(1)', 'True or False: Hash tables provide O(1) average time complexity for lookups.', 'true', 'MEDIUM', 8, 'Data Structures & Algorithms'),
+            ('SQL injection SQLi', 'True or False: SQL injection is a type of web security vulnerability.', 'true', 'EASY', 5, 'Cybersecurity'),
+            ('Cloud cheaper always', 'True or False: Cloud computing is always cheaper than on-premise infrastructure.', 'false', 'MEDIUM', 8, 'DevOps & Cloud'),
+            ('Moore law doubles', 'True or False: Moore\'s Law states transistor count doubles every two years.', 'true', 'EASY', 5, 'Tech Trivia & Innovations'),
+            ('Polymorphism OOP', 'True or False: Polymorphism allows objects of different types to be treated uniformly.', 'true', 'MEDIUM', 8, 'Programming Fundamentals'),
+        ]
+        
+        for title, text, answer, difficulty, points, cat_name in additional_quick_questions:
             quick_questions.append({
                 'category': categories[cat_name],
-                'title': f'Quick Question {i+4}',
-                'question_text': f'True or False: Statement {i+4} is correct.',
-                'correct_answer': random.choice(['true', 'false']),
-                'difficulty': random.choice(['EASY', 'MEDIUM']),
-                'points': random.choice([5, 8])
+                'title': title,
+                'question_text': text,
+                'correct_answer': answer,
+                'difficulty': difficulty,
+                'points': points
             })
         
         for q in quick_questions:

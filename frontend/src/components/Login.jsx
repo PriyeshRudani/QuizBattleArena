@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { authAPI } from '../api';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-function Login({ onLogin }) {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, user } = useAuth();
+
+  // Redirect if already logged in
+  if (user) {
+    return <Navigate to="/" />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,12 +21,7 @@ function Login({ onLogin }) {
     setLoading(true);
 
     try {
-      const data = await authAPI.login(username, password);
-      localStorage.setItem('access_token', data.access);
-      localStorage.setItem('refresh_token', data.refresh);
-      
-      const profile = await authAPI.getProfile();
-      onLogin(profile);
+      await login(username, password);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
@@ -91,15 +92,6 @@ function Login({ onLogin }) {
           <Link to="/register" className="text-primary-400 hover:text-primary-300 font-semibold">
             Register here
           </Link>
-        </div>
-
-        <div className="mt-4 p-4 bg-white/5 rounded-lg text-sm">
-          <p className="text-gray-400 mb-2">Demo users (password: demo1234):</p>
-          <div className="flex flex-wrap gap-2">
-            <code className="text-primary-300">alice_coder</code>
-            <code className="text-primary-300">bob_dev</code>
-            <code className="text-primary-300">charlie_eng</code>
-          </div>
         </div>
       </div>
     </div>

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-function Navbar({ user, onLogout }) {
+function Navbar() {
   const navigate = useNavigate();
+  const { user, logout, isAdmin } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    onLogout();
+    logout();
     navigate('/login');
   };
 
@@ -25,15 +25,34 @@ function Navbar({ user, onLogout }) {
           <div className="flex items-center space-x-6">
             {user ? (
               <>
-                <Link to="/leaderboard" className="hover:text-primary-400 transition-colors">
-                  🏆 Leaderboard
-                </Link>
-                <Link to="/battle" className="hover:text-primary-400 transition-colors">
-                  ⚔️ Battle
-                </Link>
+                {isAdmin() ? (
+                  // Admin Navigation
+                  <>
+                    <Link to="/admin" className="hover:text-primary-400 transition-colors">
+                      🛠️ Admin Dashboard
+                    </Link>
+                  </>
+                ) : (
+                  // User Navigation
+                  <>
+                    <Link to="/leaderboard" className="hover:text-primary-400 transition-colors">
+                      🏆 Leaderboard
+                    </Link>
+                    <Link to="/battle" className="hover:text-primary-400 transition-colors">
+                      ⚔️ Battle
+                    </Link>
+                  </>
+                )}
                 <div className="flex items-center space-x-4 bg-white/10 rounded-full px-4 py-2 border border-white/20">
                   <span className="text-sm font-semibold">{user.username}</span>
-                  <span className="text-accent-400 font-bold">{user.total_points || 0} pts</span>
+                  {!isAdmin() && (
+                    <span className="text-accent-400 font-bold">{user.total_points || 0} pts</span>
+                  )}
+                  <span className={`text-xs px-2 py-1 rounded ${
+                    isAdmin() ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
+                  }`}>
+                    {isAdmin() ? '🛠️ Admin' : '🎮 Player'}
+                  </span>
                 </div>
                 <button
                   onClick={handleLogout}

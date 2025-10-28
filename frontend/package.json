@@ -16,7 +16,7 @@
     "postcss": "^8.4.32"
   },
   "scripts": {
-    "start": "PORT=5000 BROWSER=none react-scripts start",
+    "start": "set PORT=5000 && set BROWSER=none && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

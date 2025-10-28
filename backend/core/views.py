@@ -10,19 +10,17 @@ from .models import Category, Question, UserProfile, Score, Challenge
 from .serializers import (
     CategorySerializer, QuestionSerializer, QuestionDetailSerializer,
     UserSerializer, UserProfileSerializer, RegisterSerializer,
-    ScoreSerializer, ChallengeSerializer, AnswerSubmissionSerializer
+    ScoreSerializer, ChallengeSerializer, AnswerSubmissionSerializer,
+    AdminQuestionSerializer, AdminUserSerializer, AdminCategorySerializer
 )
+from .permissions import IsAdminRole, IsAdminOrReadOnly, IsUserRole
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'slug'
-    
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]
-        return [AllowAny()]
+    permission_classes = [IsAdminOrReadOnly]
     
     @action(detail=True, methods=['get'])
     def questions(self, request, slug=None):
@@ -54,11 +52,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-    
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]
-        return [AllowAny()]
+    permission_classes = [IsAdminOrReadOnly]
     
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -67,6 +61,13 @@ class QuestionViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def submit(self, request, pk=None):
+        # Only users (not admins) can submit answers
+        if hasattr(request.user, 'profile') and request.user.profile.is_admin():
+            return Response(
+                {'error': 'Admins cannot submit quiz answers'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         question = self.get_object()
         serializer = AnswerSubmissionSerializer(data=request.data)
         
@@ -165,8 +166,8 @@ def leaderboard(request):
     else:
         start_date = None
     
-    # Get user profiles with points
-    profiles = UserProfile.objects.select_related('user').all()
+    # Get user profiles with points, excluding admins
+    profiles = UserProfile.objects.select_related('user').filter(role='user').all()
     
     if start_date:
         # Calculate points for the period
@@ -215,11 +216,21 @@ class ChallengeViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
+        # Admins shouldn't participate in challenges
+        if hasattr(user, 'profile') and user.profile.is_admin():
+            return Challenge.objects.none()
+        
         return Challenge.objects.filter(
             Q(challenger=user) | Q(opponent=user)
         )
     
     def perform_create(self, serializer):
+        # Prevent admins from creating challenges
+        if hasattr(self.request.user, 'profile') and self.request.user.profile.is_admin():
+            return Response(
+                {'error': 'Admins cannot participate in challenges'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         serializer.save(challenger=self.request.user)
     
     @action(detail=True, methods=['get'])
@@ -227,3 +238,148 @@ class ChallengeViewSet(viewsets.ModelViewSet):
         challenge = self.get_object()
         serializer = self.get_serializer(challenge)
         return Response(serializer.data)
+
+
+# Admin-only ViewSets for CRUD operations
+class AdminQuestionViewSet(viewsets.ModelViewSet):
+    """Admin-only viewset for full CRUD on questions with correct answers"""
+    queryset = Question.objects.all()
+    serializer_class = AdminQuestionSerializer
+    permission_classes = [IsAdminRole]
+    pagination_class = None  # Disable pagination for admin
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get question statistics"""
+        total = Question.objects.count()
+        by_type = Question.objects.values('question_type').annotate(count=Count('id'))
+        by_difficulty = Question.objects.values('difficulty').annotate(count=Count('id'))
+        by_category = Question.objects.values('category__name').annotate(count=Count('id'))
+        
+        return Response({
+            'total_questions': total,
+            'by_type': list(by_type),
+            'by_difficulty': list(by_difficulty),
+            'by_category': list(by_category)
+        })
+
+
+class AdminCategoryViewSet(viewsets.ModelViewSet):
+    """Admin-only viewset for full CRUD on categories"""
+    queryset = Category.objects.all()
+    serializer_class = AdminCategorySerializer
+    permission_classes = [IsAdminRole]
+    pagination_class = None  # Disable pagination for admin
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get category statistics"""
+        categories_with_counts = Category.objects.annotate(
+            question_count=Count('questions')
+        ).values('id', 'name', 'slug', 'question_count')
+        
+        return Response({
+            'total_categories': Category.objects.count(),
+            'categories': list(categories_with_counts)
+        })
+
+
+class AdminUserViewSet(viewsets.ModelViewSet):
+    """Admin-only viewset for user management"""
+    queryset = User.objects.all()
+    serializer_class = AdminUserSerializer
+    permission_classes = [IsAdminRole]
+    pagination_class = None  # Disable pagination for admin
+    http_method_names = ['get', 'patch', 'delete']  # No POST (use registration), no full PUT
+    
+    def get_queryset(self):
+        # Optionally filter by role
+        role = self.request.query_params.get('role')
+        if role:
+            return User.objects.filter(profile__role=role)
+        return User.objects.all()
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get user statistics"""
+        total_users = User.objects.count()
+        active_users = User.objects.filter(is_active=True).count()
+        admin_count = UserProfile.objects.filter(role='admin').count()
+        user_count = UserProfile.objects.filter(role='user').count()
+        
+        # Recent registrations
+        recent = User.objects.order_by('-date_joined')[:10].values(
+            'id', 'username', 'email', 'date_joined'
+        )
+        
+        return Response({
+            'total_users': total_users,
+            'active_users': active_users,
+            'admins': admin_count,
+            'regular_users': user_count,
+            'recent_registrations': list(recent)
+        })
+    
+    @action(detail=True, methods=['patch'])
+    def toggle_active(self, request, pk=None):
+        """Toggle user active status"""
+        user = self.get_object()
+        user.is_active = not user.is_active
+        user.save()
+        
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'is_active': user.is_active
+        })
+    
+    @action(detail=True, methods=['patch'])
+    def change_role(self, request, pk=None):
+        """Change user role (admin/user)"""
+        user = self.get_object()
+        new_role = request.data.get('role')
+        
+        if new_role not in ['admin', 'user']:
+            return Response(
+                {'error': 'Invalid role. Must be "admin" or "user"'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user.profile.role = new_role
+        user.profile.save()
+        
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'role': user.profile.role
+        })
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminRole])
+def admin_dashboard_stats(request):
+    """Get overall platform statistics for admin dashboard"""
+    total_users = User.objects.count()
+    total_questions = Question.objects.count()
+    total_categories = Category.objects.count()
+    total_quiz_attempts = Score.objects.count()
+    
+    # Recent activity
+    recent_scores = Score.objects.select_related('user', 'question').order_by('-created_at')[:10]
+    recent_users = User.objects.order_by('-date_joined')[:10]
+    
+    # Top performers
+    top_users = UserProfile.objects.filter(role='user').order_by('-total_points')[:10]
+    
+    return Response({
+        'overview': {
+            'total_users': total_users,
+            'total_questions': total_questions,
+            'total_categories': total_categories,
+            'total_quiz_attempts': total_quiz_attempts,
+        },
+        'recent_scores': ScoreSerializer(recent_scores, many=True).data,
+        'recent_users': [{'id': u.id, 'username': u.username, 'date_joined': u.date_joined} for u in recent_users],
+        'top_performers': [{'username': p.user.username, 'points': p.total_points} for p in top_users],
+    })
+

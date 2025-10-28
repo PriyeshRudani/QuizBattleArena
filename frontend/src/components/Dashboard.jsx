@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { categoryAPI } from '../api';
 
 const categoryIcons = {
@@ -15,14 +16,20 @@ const categoryIcons = {
   'Tech Trivia & Innovations': '🚀',
 };
 
-function Dashboard({ user }) {
+function Dashboard() {
+  const { user, isAdmin } = useAuth();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect admins to admin dashboard
+    if (isAdmin()) {
+      navigate('/admin');
+      return;
+    }
     fetchCategories();
-  }, []);
+  }, [isAdmin, navigate]);
 
   const fetchCategories = async () => {
     try {

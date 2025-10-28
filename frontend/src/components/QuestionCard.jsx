@@ -13,7 +13,7 @@ function QuestionCard({ question, onSelect }) {
   const getTypeBadge = (type) => {
     const icons = {
       MCQ: '✅',
-      CODING: '💻',
+      CODE: '💻',
       QUICK: '⚡',
     };
     return icons[type] || '📝';
