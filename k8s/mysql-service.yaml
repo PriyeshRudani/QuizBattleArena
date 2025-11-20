@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: quiz-battle-arena
+  labels:
+    app: mysql
+    tier: database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+    name: mysql
+  selector:
+    app: mysql
+    tier: database
+---
+# Optional: NodePort for external MySQL access (debugging)
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-nodeport
+  namespace: quiz-battle-arena
+  labels:
+    app: mysql
+    tier: database
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    targetPort: 3306
+    nodePort: 30306
+    protocol: TCP
+    name: mysql
+  selector:
+    app: mysql
+    tier: database

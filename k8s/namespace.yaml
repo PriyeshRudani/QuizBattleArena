@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: quiz-battle-arena
+  labels:
+    name: quiz-battle-arena
+    app: quizbattlearena

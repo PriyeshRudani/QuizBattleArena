@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: quiz-battle-arena
+data:
+  # Backend configuration
+  DEBUG: "False"
+  DATABASE_ENGINE: "mysql"
+  DATABASE_HOST: "mysql-service"
+  DATABASE_PORT: "3306"
+  
+  # Frontend configuration
+  REACT_APP_API_URL: "http://localhost:30800/api"
