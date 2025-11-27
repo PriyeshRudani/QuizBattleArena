@@ -1,0 +1,209 @@
+Project: Coding Quiz Battle Arena
+
+Goal:
+Generate a full-stack web application scaffold that runs on Replit (SQLite for now), using:
+- Backend: Django 4.x + Django REST Framework (+ Django Channels placeholder)
+- Frontend: React (Create React App) + Tailwind CSS + simple animations
+- DB: SQLite on Replit (seed script will create lots of MCQs + categories)
+- Authentication: JWT (djoser or simple JWT) for API endpoints
+- Web: REST endpoints for quizzes, categories, users, scores; WebSocket-ready endpoints placeholder for future multiplayer
+- Admin: Django admin with CRUD for questions
+- Extras: seed script to create ~300 MCQs across the 10 categories; example coding and quick-fire questions; modern fun UI components (cards, progress bars, confetti on win), responsive layout
+
+Project structure (create these files & contents):
+
+/backend/
+  manage.py
+  requirements.txt
+  Dockerfile (basic placeholder)
+  .replit (replit run config)
+  /app/
+    __init__.py
+    asgi.py
+    settings.py
+    urls.py
+    wsgi.py
+  /core/  <-- main Django app
+    migrations/
+    __init__.py
+    admin.py
+    apps.py
+    models.py
+    serializers.py
+    views.py
+    urls.py
+    consumers.py  # placeholder for Channels, not required to run on Replit
+    management/
+      commands/
+        seed_questions.py  # script to seed many questions
+/frontend/
+  package.json
+  tailwind.config.js
+  postcss.config.js
+  /src/
+    index.js
+    App.jsx
+    api.js
+    /components/
+      Navbar.jsx
+      Dashboard.jsx
+      QuizPlayer.jsx
+      QuestionCard.jsx
+      Leaderboard.jsx
+      BattlePlaceholder.jsx
+      Login.jsx
+      Register.jsx
+    /styles/
+      globals.css
+  Dockerfile (placeholder)
+docker-compose.yml (placeholder)
+
+Backend requirements (requirements.txt):
+Django>=4.2
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+channels  # placeholder only; apps should run w/o channels in Replit
+mysqlclient  # optional for later
+python-dotenv
+
+Backend key details to implement:
+
+1) settings.py
+- Configure installed apps: django.contrib.admin, rest_framework, corsheaders, core
+- Configure REST_FRAMEWORK with JWT auth:
+  REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticatedOrReadOnly',)
+  }
+- CORS allowed origins: allow all for Replit dev
+- DB: default sqlite3 for Replit
+- ASGI setup: add channels as ASGI application (placeholder) but do not require Redis.
+
+2) models.py (core/models.py)
+- Category: id, name, slug, description
+- Question: id, title, category(FK), question_type (MCQ|CODING|QUICK), difficulty, language, options(JSONField, nullable), correct_option (nullable), solution_code (nullable), points
+- UserProfile: OneToOne with User, total_points (int), badges(JSONField), avatar_url (optional)
+- Challenge & Score models (lightweight): Challenge (for battles), Score (linking user, question, points, time_taken)
+
+3) serializers.py
+- CategorySerializer, QuestionSerializer (read/write), UserSerializer (public), ScoreSerializer
+
+4) views.py / urls.py
+- API endpoints (all prefixed /api/):
+  GET /api/categories/
+  GET /api/categories/{id}/questions/?limit=&difficulty=
+  GET /api/questions/{id}/
+  POST /api/questions/{id}/submit/  -> payload { answer OR code, language } -> returns {correct: true/false, points_awarded, time_taken}
+  POST /api/auth/register/  (djoser or custom)
+  POST /api/auth/login/ -> returns JWT
+  GET /api/leaderboard/?period=overall/daily/weekly
+  GET /api/user/profile/
+  POST /api/challenges/  (create challenge request)
+  GET /api/challenges/{id}/status/
+
+- Protect write endpoints for admin role only (question creation/edit/delete).
+
+5) management command: seed_questions.py
+- On `python manage.py seed_questions` insert the 10 categories:
+  Programming Fundamentals, Web Development, Database & SQL, Computer Networks, Operating Systems, Data Structures & Algorithms, Cybersecurity, DevOps & Cloud, Software Engineering, Tech Trivia & Innovations
+- Generate at least 300 MCQs distributed across categories and difficulties (e.g., 30 easy, 20 medium, 10 hard per category or balanced)
+- Also create ~30 coding questions (small functions) and ~50 quick-fire true/false questions.
+- Use a variety of templates for question content so data looks realistic (include code snippets in question text for "Guess the output" items).
+- Create 5 demo users with hashed passwords and some initial points.
+
+6) admin.py
+- Register Category, Question, Score and UserProfile with list_display and search fields.
+
+7) testing: include a minimal test that APIs respond (optional).
+
+Frontend details (React):
+
+1) Setup
+- Create React App with Vite or CRA (CRA safer on Replit)
+- Tailwind CSS for styling + simple animations (e.g., framer-motion optional)
+- Axios for API calls
+
+2) api.js
+- Axios instance with baseURL set to the backend endpoint (use env var)
+- helper functions: login, register, fetchCategories, fetchQuestions, submitAnswer, fetchLeaderboard, fetchProfile
+
+3) Components
+- Navbar: show logo, login/register, user points
+- Dashboard: show categories as cards with fun SVG icons, progress bars for user progress, "Play" buttons per category
+- QuizPlayer: adaptive layout to show MCQ, code editor (for coding Qs use a simple textarea if embedding Ace is hard on Replit), timer, submit button. On correct answer, show animated confetti (use a small JS confetti lib)
+- QuestionCard: used in lists
+- Leaderboard: show top users with avatars
+- BattlePlaceholder: UI that hints at future real-time battles (shows mock opponent and progress bars)
+- Login/Register pages using JWT; store token in localStorage; attach to API calls
+
+4) UI polish
+- Tailwind theme: playful colors (teal, purple, yellow accent), rounded cards, shadow, hover effects.
+- Mobile-first responsive layout.
+- Simple animations: card hover scale, progress bar transitions, & confetti on success.
+
+5) Seed data in frontend
+- When first run, if no categories returned, call a (protected) /api/seed trigger or ask the user to run the backend management command. (Prefer management command for safe design.)
+
+6) Instructions for Replit
+- Put backend under /backend, frontend under /frontend
+- Replit run command: start backend server then serve frontend build, or configure Replit to run both via `concurrently` or a simple bash script. Example `.replit`:
+  run = "bash start.sh"
+  start.sh:
+    #!/usr/bin/env bash
+    cd backend
+    pip install -r requirements.txt
+    python manage.py migrate
+    python manage.py seed_questions
+    python manage.py runserver 0.0.0.0:8000 & 
+    cd ../frontend
+    npm install
+    npm start
+
+7) Download & migrate to VS Code later
+- After development on Replit, press download zip.
+- Locally:
+  - Extract
+  - Create Python venv, install requirements
+  - Remove channels dependency if not needed locally
+  - Install MySQL locally or run `docker run --name quiz-mysql -e MYSQL_ROOT_PASSWORD=pass -e MYSQL_DATABASE=quizdb -p 3306:3306 -d mysql:8`
+  - Change Django DATABASES in settings.py to MySQL, set env vars in .env
+  - Run migrations, load seed data if needed
+  - Create docker-compose.yml that defines services: backend, frontend (build), db (mysql:8)
+  - Add Dockerfiles for backend and frontend:
+    Backend Dockerfile (example):
+      FROM python:3.11-slim
+      WORKDIR /app
+      COPY backend/requirements.txt .
+      RUN pip install -r requirements.txt
+      COPY backend/ .
+      CMD ["gunicorn", "app.wsgi:application", "--bind", "0.0.0.0:8000"]
+    Frontend Dockerfile (example):
+      FROM node:18
+      WORKDIR /app
+      COPY frontend/package*.json ./
+      RUN npm install
+      COPY frontend/ .
+      RUN npm run build
+      CMD ["npx", "serve", "-s", "build", "-l", "3000"]
+  - Compose file to run them together locally
+
+Deliverables to generate on Replit:
+- Working backend and frontend on Replit URLs
+- Admin accessible to add/edit/remove questions
+- Seeded DB with 300+ MCQs
+- Fun modern UI with ability to play single-player quizzes
+- JWT auth for login & saving scores
+- README.md with exact steps to download, migrate to MySQL, and Dockerize
+
+Extra notes:
+- Keep coding challenge evaluation simple: on Replit keep coding problems scored by simple pattern matching or by executing user code in a sandbox with strict timeouts (be careful; for demo use simple safe checks). For full safe evaluation later, plan to integrate a sandboxed runner or external judge.
+- For multiplayer, implement placeholder endpoints and UI; keep real-time as an optional extension after migration to local Docker/K8s.
+- Use seed_questions.py to produce nicely formatted question texts (include HTML in text where code snippets needed) so React can render code blocks using a syntax highlighter.
+
+Finally, create a README.md with:
+- how to run on Replit (start.sh)
+- how to download zip & migrate to local
+- how to switch DB to MySQL (example env vars)
+- how to build docker images and run docker-compose locally
+- notes on expanding to Kubernetes
