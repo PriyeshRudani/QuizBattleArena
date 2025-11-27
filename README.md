@@ -1,44 +1,44 @@
-# 🕹️ Coding Quiz Battle Arena
+# Coding Quiz Battle Arena
 
 A full-stack web application for testing programming knowledge through interactive quizzes with real-time battles, leaderboards, and achievement tracking. Built with Django REST Framework and React, containerized with Docker.
 
-## 🌌 Overview
+## Overview
 
-Step into the **Quiz Battle Arena** – a universe where coding knowledge meets competitive gameplay. Battle through 380+ questions across 10 categories, climb the leaderboards, and prove your programming mastery. Whether you're a beginner or a seasoned developer, there's a challenge waiting for you.
+Step into the Quiz Battle Arena – a universe where coding knowledge meets competitive gameplay. Battle through 380+ questions across 10 categories, climb the leaderboards, and prove your programming mastery. Whether you're a beginner or a seasoned developer, there's a challenge waiting for you.
 
-**Key Highlights:**
-- 🎯 380+ Questions across 10 categories (Programming Fundamentals, Web Development, Database & SQL, Computer Networks, Operating Systems, Data Structures & Algorithms, Cybersecurity, DevOps & Cloud, Software Engineering, Tech Trivia)
-- 🔐 JWT Authentication with role-based access control (Admin/User)
-- 📊 Real-time leaderboards (Overall, Weekly, Daily)
-- 👑 Admin dashboard for complete CRUD operations
-- 🎨 Responsive UI with Tailwind CSS and animations
-- 🐳 Docker containerized deployment
+Key Highlights:
+- 380+ Questions across 10 categories (Programming Fundamentals, Web Development, Database & SQL, Computer Networks, Operating Systems, Data Structures & Algorithms, Cybersecurity, DevOps & Cloud, Software Engineering, Tech Trivia)
+- JWT Authentication with role-based access control (Admin/User)
+- Real-time leaderboards (Overall, Weekly, Daily)
+- Admin dashboard for complete CRUD operations
+- Responsive UI with Tailwind CSS and animations
+- Docker containerized deployment
 
 ---
 
-## 🧿 User Roles
+## User Roles
 
-### Admin Role
-- Full access to Django Admin panel (`/admin`)
-- Custom React Admin Dashboard with:
-  - **Question Management** - Create, read, update, delete questions
-  - **Category Management** - Manage quiz categories
-  - **User Management** - Toggle user status, change roles, view statistics
-- Access to platform analytics and statistics
-- Cannot participate in quizzes or challenges
+- Admin Role
+  - Full access to Django Admin panel (`/admin`)
+  - Custom React Admin Dashboard with:
+    - Question Management - Create, read, update, delete questions
+    - Category Management - Manage quiz categories
+    - User Management - Toggle user status, change roles, view statistics
+  - Access to platform analytics and statistics
+  - Cannot participate in quizzes or challenges
 
-**Admin Account:**
-- Username: `admin`
-- Password: `admin123`
+  - Admin Account:
+    - Username: `admin`
+    - Password: `admin123`
 
-### User Role
-- Register and authenticate via JWT tokens
-- Take quizzes across multiple categories
-- Submit answers and earn points
-- View personal progress and statistics
-- Access leaderboards (overall, weekly, daily)
+- User Role
+  - Register and authenticate via JWT tokens
+  - Take quizzes across multiple categories
+  - Submit answers and earn points
+  - View personal progress and statistics
+  - Access leaderboards (overall, weekly, daily)
 
-**Demo User Accounts** (password: `demo1234`):
+Demo User Accounts (password: `demo1234`):
 - `alice_coder` (1500 points)
 - `bob_dev` (1200 points)
 - `charlie_eng` (900 points)
@@ -47,7 +47,7 @@ Step into the **Quiz Battle Arena** – a universe where coding knowledge meets 
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 quiz-battle-arena/
@@ -104,49 +104,49 @@ quiz-battle-arena/
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
-### Backend
-- **Python 3.11** - Programming language
-- **Django 4.2+** - Web framework
-- **Django REST Framework** - RESTful API
-- **djangorestframework-simplejwt** - JWT authentication
-- **django-cors-headers** - CORS support
-- **Django Channels** - WebSocket support (ready for multiplayer)
-- **SQLite** - Default database (development)
-- **MySQL 8** - Production database
-- **Gunicorn** - Production WSGI server
+- Backend
+  - Python 3.11 - Programming language
+  - Django 4.2+ - Web framework
+  - Django REST Framework - RESTful API
+  - djangorestframework-simplejwt - JWT authentication
+  - django-cors-headers - CORS support
+  - Django Channels - WebSocket support (ready for multiplayer)
+  - SQLite - Default database (development)
+  - MySQL 8 - Production database
+  - Gunicorn - Production WSGI server
 
-### Frontend
-- **Node.js 18+** - JavaScript runtime
-- **React 18** - UI library
-- **React Router v6** - Client-side routing
-- **Axios** - HTTP client for API requests
-- **Tailwind CSS** - Utility-first CSS framework
-- **canvas-confetti** - Celebration animations
+- Frontend
+  - Node.js 18+ - JavaScript runtime
+  - React 18 - UI library
+  - React Router v6 - Client-side routing
+  - Axios - HTTP client for API requests
+  - Tailwind CSS - Utility-first CSS framework
+  - canvas-confetti - Celebration animations
 
-### DevOps & Deployment
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **Git** - Version control
+- DevOps & Deployment
+  - Docker - Containerization
+  - Docker Compose - Multi-container orchestration
+  - Git - Version control
 
 ---
 
-## 💠 How to Run Locally (PC/Laptop)
+## How to Run Locally (PC/Laptop)
 
-### Prerequisites
-- Python 3.11 or higher
-- Node.js 18 or higher
-- Git
+ - Prerequisites
+  - Python 3.11 or higher
+  - Node.js 18 or higher
+  - Git
 
-### Step 1: Clone the Repository
+- Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/yourusername/quiz-battle-arena.git
 cd quiz-battle-arena
 ```
 
-### Step 2: Backend Setup
+- Step 2: Backend Setup
 
 ```bash
 # Navigate to backend directory
@@ -174,11 +174,11 @@ python manage.py seed_questions
 python manage.py runserver
 ```
 
-**Backend will be running on:** `http://localhost:8000`
+Backend will be running on: `http://localhost:8000`
 
-### Step 3: Frontend Setup
+- Step 3: Frontend Setup
 
-Open a **new terminal window**:
+Open a new terminal window:
 
 ```bash
 # Navigate to frontend directory
@@ -191,25 +191,25 @@ npm install
 npm start
 ```
 
-**Frontend will be running on:** `http://localhost:3000`
+Frontend will be running on: `http://localhost:3000`
 
-### Step 4: Access the Application
+- Step 4: Access the Application
 
-- **Frontend UI:** http://localhost:3000
-- **Backend API:** http://localhost:8000/api
-- **Django Admin Panel:** http://localhost:8000/admin
+- Frontend UI: http://localhost:3000
+- Backend API: http://localhost:8000/api
+- Django Admin Panel: http://localhost:8000/admin
   - Username: `admin`
   - Password: `admin123`
 
 ---
 
-## 🧬 How to Run with Docker
+## How to Run with Docker
 
-### Prerequisites
-- Docker Desktop installed
-- Docker Compose installed
+- Prerequisites
+  - Docker Desktop installed
+  - Docker Compose installed
 
-### Step 1: Build Docker Images
+ - Step 1: Build Docker Images
 
 Navigate to the project root directory and build the images:
 
@@ -221,7 +221,7 @@ docker build -t quiz-backend ./backend
 docker build -t quiz-frontend ./frontend
 ```
 
-### Step 2: Run with Docker Compose
+ - Step 2: Run with Docker Compose
 
 The easiest way to run all services together:
 
@@ -239,32 +239,32 @@ docker-compose logs -f
 docker-compose down
 ```
 
-### Step 3: Access the Application
+ - Step 3: Access the Application
 
 After Docker Compose starts successfully:
 
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:8000/api
-- **Admin Panel:** http://localhost:8000/admin
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000/api
+- Admin Panel: http://localhost:8000/admin
 
-### Docker Services
+ - Docker Services
 
 Docker Compose will start 3 services:
 
-1. **MySQL Database** (port 3306)
+1. MySQL Database (port 3306)
    - Database: `quizdb`
    - User: `quizuser`
    - Password: `quizpassword`
 
-2. **Django Backend** (port 8000)
+2. Django Backend (port 8000)
    - Runs migrations automatically
    - Seeds questions on startup
    - Uses Gunicorn with 4 workers
 
-3. **React Frontend** (port 3000)
+3. React Frontend (port 3000)
    - Production build served via `serve`
 
-### Manual Docker Commands
+ - Manual Docker Commands
 
 If you prefer to run containers individually:
 
@@ -298,7 +298,7 @@ docker run -d \
   quiz-frontend
 ```
 
-### Useful Docker Commands
+ - Useful Docker Commands
 
 ```bash
 # View running containers
@@ -331,7 +331,7 @@ docker images
 docker system prune -a
 ```
 
-### Docker Compose Commands
+ - Docker Compose Commands
 
 ```bash
 # Start services
@@ -366,12 +366,4 @@ docker-compose restart backend
 docker-compose ps
 ```
 
----
-
-<div align="center">
-
-**Made with 🩶 for coders who live for the challenge** 🕹️
-
 *Enter the Arena. Prove Your Skills. Dominate the Leaderboard.*
-
-</div>

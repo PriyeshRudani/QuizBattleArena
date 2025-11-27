@@ -1,6 +1,6 @@
 # Docker Hub Deployment Guide
 
-## 🚀 Quick Start - Push to Docker Hub
+## Quick Start - Push to Docker Hub
 
 ### Prerequisites
 1. Create a Docker Hub account at https://hub.docker.com
@@ -41,7 +41,7 @@ docker push ${USERNAME}/quizbattlearena-backend:latest
 docker push ${USERNAME}/quizbattlearena-frontend:latest
 ```
 
-## 📦 Your Docker Hub Links
+## Your Docker Hub Links
 
 After pushing, your images will be available at:
 
@@ -50,7 +50,7 @@ After pushing, your images will be available at:
 
 Replace `yourusername` with your actual Docker Hub username.
 
-## 🎯 For Submission
+## For Submission
 
 Use these links in your submission sheet:
 
@@ -62,7 +62,7 @@ Or provide the Docker Hub repository URLs:
 - `https://hub.docker.com/r/yourusername/quizbattlearena-backend`
 - `https://hub.docker.com/r/yourusername/quizbattlearena-frontend`
 
-## 🔧 Deploy from Docker Hub
+## Deploy from Docker Hub
 
 To deploy using the Docker Hub images:
 
@@ -73,14 +73,14 @@ docker-compose -f docker-compose.prod.yml up -d
 
 Make sure to update the `yourusername` in `docker-compose.prod.yml` with your actual Docker Hub username.
 
-## 📝 Notes
+## Notes
 
 - The images include both backend (Django) and frontend (React) applications
 - Database (MySQL) uses the official MySQL image from Docker Hub
 - Make sure your images are set to **public** visibility on Docker Hub for easy access
 - Total size: Backend ~500MB, Frontend ~150MB (approximate)
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 **Issue: "denied: requested access to the resource is denied"**
 - Solution: Make sure you're logged in with `docker login`
